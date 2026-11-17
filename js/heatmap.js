@@ -45,14 +45,44 @@ class Heatmap {
   // Prepare the data and scales before we render it
   updateVis() {
   	const vis = this;
-  	// ...
+  	vis.groupedData = d3.groups(vis.data, d => d.state);
+
+	vis.yValue = d => d[0];
+	vis.colorValue = d => d.value;
+	vis.xValue = d => d.year; 
+
+	vis.colorScale.domain(d3.extent(vis.data, vis.colorValue));
+	vis.xScale.domain(d3.extent(vis.data, vis.xValue));
+	vis.yScale.domain(vis.groupedData.map(vis.yValue));
+	  
   	vis.renderVis();
   	vis.renderLegend();
   }
   
   // Bind data to visual elements
   renderVis() {
-  	// ...
+  	// Bind data to selection and use the name of each state (d[0]) as a key
+	const row = vis.chart.selectAll('.h-row')
+    	.data(vis.groupedData, d=> d[0]);
+
+	// Enter
+	const rowEnter = row.enter().append('g')
+    	.attr('class', 'h-row');
+
+	// Enter + update
+	rowEnter.merge(row)
+   	 .attr('transform', d => `translate(0,${vis.yScale(vis.yValue(d))})`);
+
+	// Exit
+	row.exit().remove();
+
+	// Append row label (y-axis)
+	rowEnter.append('text')
+    	.attr('class', 'h-label')
+    	.attr('text-anchor', 'end')
+    	.attr('dy', '0.85em')
+    	.attr('x', -8)
+    	.text(vis.yValue);
   }
   
   // Update colour legend
