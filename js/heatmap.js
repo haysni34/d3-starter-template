@@ -91,6 +91,17 @@ class Heatmap {
 	vis.yValue = d => d[0];
 	vis.colorValue = d => d.value;
 	vis.xValue = d => d.year; 
+	  
+	if (vis.config.sortOption == 'cases') {
+  		// Sum the case numbers for each state
+  		// d[0] is the state name, d[1] contains an array of yearly values
+  		vis.groupedData.forEach(d => {
+    	d[3] = d3.sum(d[1], k => k.value);
+  		});
+
+  		// Sort in descending order by total cases
+  		vis.groupedData.sort((a,b) => b[3] - a[3]);
+}
 
 	vis.colorScale.domain(d3.extent(vis.data, vis.colorValue));
 	vis.xScale.domain(d3.extent(vis.data, vis.xValue));
@@ -126,8 +137,8 @@ class Heatmap {
 
 	// Enter + update
 	rowEnter.merge(row)
-   	 .attr('transform', d => `translate(0,${vis.yScale(vis.yValue(d))})`);
-
+	.transition().duration(1000) // <--- new line
+	.attr('transform', d => `translate(0,${vis.yScale(vis.yValue(d))})`);
 	// Exit
 	row.exit().remove();
 
