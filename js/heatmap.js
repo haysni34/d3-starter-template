@@ -39,6 +39,15 @@ class Heatmap {
 	vis.xAxisG = vis.chartArea.append('g')
     	.attr('class', 'axis x-axis')
     	.attr('transform', `translate(0,${vis.config.height})`);
+	  vis.vaccineLine = vis.chartArea.append('line')
+    .attr('class', 'vaccine-line');
+
+	vis.vaccineLabel = vis.chartArea.append('text')
+    	.attr('class', 'vaccine-label')
+    	.attr('text-anchor', 'middle')
+    	.attr('y', -20)
+    	.attr('dy', '0.85em')
+    	.text('Vaccine introduced');
   	vis.updateVis();
   }
   
@@ -54,9 +63,23 @@ class Heatmap {
 	vis.colorScale.domain(d3.extent(vis.data, vis.colorValue));
 	vis.xScale.domain(d3.extent(vis.data, vis.xValue));
 	vis.yScale.domain(vis.groupedData.map(vis.yValue));
+
+	    // Convert year (1963) to pixel coordinate
+	const xVaccineIntroduced = vis.xScale(vis.config.vaccineIntroduced);
+
+	// Set positions
+	vis.vaccineLine
+    	.attr('x1', xVaccineIntroduced)
+    	.attr('x2', xVaccineIntroduced)
+    	.attr('y1', -5)
+    	.attr('y2', vis.config.height);
+
+	vis.vaccineLabel.attr('x', xVaccineIntroduced);
 	  
   	vis.renderVis();
   	vis.renderLegend();
+
+	
   }
   
   // Bind data to visual elements
