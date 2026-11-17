@@ -12,36 +12,40 @@ class Heatmap {
   // Create SVG area, initialize scales/axes, append static elements
   initVis() {
   	const vis = this;
+	// Create SVG drawing area
   	vis.svg = d3.select(vis.config.parentElement).append('svg')
 	          .attr('width', vis.config.containerWidth)
 	          .attr('height', vis.config.containerHeight);
-
+	 // Calculate chart dimensions
 	vis.config.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
 	vis.config.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
-
+	// Create chart area
 	vis.chartArea = vis.svg.append('g')
 			.attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
-
+    // Initialize color scale
 	vis.colorScale = d3.scaleSequential()
     		.interpolator(d3.interpolateReds);
-
+	// Initialize X scale
 	vis.xScale = d3.scaleLinear()
    			.range([0, vis.config.width]);
+	// Initialize Y scale
 	vis.yScale = d3.scaleBand()
     		.range([0, vis.config.height])
    			.paddingInner(0.2);
+	   // Initialize X axis
 	vis.xAxis = d3.axisBottom(vis.xScale)
     		.ticks(6)
     		.tickSize(0)
     		.tickFormat(d3.format('d')) // Remove comma delimiter for thousands
     		.tickPadding(10);
-
+	// Create X axis group
 	vis.xAxisG = vis.chartArea.append('g')
     	.attr('class', 'axis x-axis')
     	.attr('transform', `translate(0,${vis.config.height})`);
+	// Create vaccine introduction line
 	  vis.vaccineLine = vis.chartArea.append('line')
-    .attr('class', 'vaccine-line');
-
+    	.attr('class', 'vaccine-line');
+	// Create vaccine introduction label
 	vis.vaccineLabel = vis.chartArea.append('text')
     	.attr('class', 'vaccine-label')
     	.attr('text-anchor', 'middle')
@@ -129,6 +133,24 @@ class Heatmap {
         	return vis.colorScale(vis.colorValue(d));
       	}
     	});
+	  // Add tooltip behavior
+	  cellEnter.merge(cell)
+   		 // ... other attributes ...
+    	.on('mouseover', (event,d) => {
+    		const value = (d.value === null) ? 'No data available' : Math.round(d.value * 100) / 100;
+      		d3.select('#tooltip')
+        	.style('display', 'block')
+        	.style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
+        	.style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+        	.html(`
+          	<div class='tooltip-title'>${d.state}</div>
+          	<div>${d.year}: <strong>${value}</strong></div>
+        `	);
+    })
+    .on('mouseleave', () => {
+      d3.select('#tooltip').style('display', 'none');
+    });
+	  
 	  const cellNa = row.merge(rowEnter).selectAll('.h-cell-na')
     	.data(d => d[1].filter(k => k.value === null));
 
