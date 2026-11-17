@@ -12,7 +12,9 @@ class Heatmap {
   // Create SVG area, initialize scales/axes, append static elements
   initVis() {
   	const vis = this;
-  	// ...
+  	vis.svg = d3.select(vis.config.parentElement).append('svg')
+	          .attr('width', vis.config.containerWidth)
+	          .attr('height', vis.config.containerHeight);
   	vis.updateVis();
   }
   
