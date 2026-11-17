@@ -83,6 +83,42 @@ class Heatmap {
     	.attr('dy', '0.85em')
     	.attr('x', -8)
     	.text(vis.yValue);
+
+	const cellWidth = (vis.config.width / (vis.xScale.domain()[1] - vis.xScale.domain()[0])) - 2;
+
+	// Bind data to selection
+	const cell = row.merge(rowEnter).selectAll('.h-cell')
+   		.data(d => d[1]);
+
+	// Enter
+	const cellEnter = cell.enter().append('rect')
+    	.attr('class', 'h-cell');
+
+	// Enter + update
+	cellEnter.merge(cell)
+    	.attr('height', vis.yScale.bandwidth())
+    	.attr('width', cellWidth)
+    	.attr('x', d => vis.xScale(vis.xValue(d)))
+    	.attr('fill', d => {
+     		if (d.value === 0 || d.value === null) {
+        	return '#fff';
+      	} else {
+        	return vis.colorScale(vis.colorValue(d));
+      	}
+    	});
+	  const cellNa = row.merge(rowEnter).selectAll('.h-cell-na')
+    	.data(d => d[1].filter(k => k.value === null));
+
+	const cellNaEnter = cellNa.enter().append('line')
+    	.attr('class', 'h-cell-na');
+
+	cellNaEnter.merge(cellNa)
+    	.attr('x1', d => vis.xScale(vis.xValue(d)))
+    	.attr('x2', d => vis.xScale(vis.xValue(d)) + cellWidth)
+    	.attr('y1', vis.yScale.bandwidth())
+    	.attr('y2', 0);
+	  
+	  vis.xAxisG.call(vis.xAxis);
   }
   
   // Update colour legend
