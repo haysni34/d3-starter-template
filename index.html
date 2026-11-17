@@ -1,18 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>D3 Project Starter Template</title>
-    <meta charset="UTF-8">
-    <link rel="icon" href="data:;base64,iVBORwOKGO=" />
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>    
-    <!-- Add HTML content, SVG drawing area, ... -->
-    
-    <!-- D3 bundle -->
-    <script src="js/d3.v6.min.js"></script>
+<h1>The Impact of Vaccines on the Measles</h1>
 
-    <!-- Our JS code -->
-    <script src="js/main.js"></script>
-</body>
-</html>
+<div id="heatmap-container" class="vis">
+    <div class="caption">
+        The heat map below shows the number of cases per 100,000 people.
+        Sort states 
+        <select id="sort-control">
+            <option value="alphabetically">alphabetically</option>
+            <option value="cases">by case numbers</option>
+        </select>
+    </div>
+</div>
