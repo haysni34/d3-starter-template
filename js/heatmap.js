@@ -52,6 +52,34 @@ class Heatmap {
     	.attr('y', -20)
     	.attr('dy', '0.85em')
     	.text('Vaccine introduced');
+
+	  // Define legend dimensions
+	vis.config.legendWidth = 100;
+	vis.config.legendBarHeight = 10;
+
+	// Create legend group
+	vis.legend = vis.svg.append('g')
+        .attr('transform', `translate(${vis.config.containerWidth - vis.config.legendWidth - vis.config.margin.right},0)`);
+	  
+	  // Initialize linear gradient
+	vis.legendColorGradient = vis.legend.append('defs').append('linearGradient')
+    	.attr('id', 'linear-gradient');
+	 
+	vis.legendColorRamp = vis.legend.append('rect')
+    	.attr('width', vis.config.legendWidth)
+    	.attr('height', vis.config.legendBarHeight)
+    	.attr('fill', 'url(#linear-gradient)');
+
+	   vis.xLegendScale = d3.scaleLinear()
+    .range([0, vis.config.legendWidth]);
+
+	vis.xLegendAxis = d3.axisBottom(vis.xLegendScale)
+    	.tickSize(vis.config.legendBarHeight + 3)
+    	.tickFormat(d3.format('d'));
+
+	vis.xLegendAxisG = vis.legend.append('g')
+    	.attr('class', 'axis x-axis legend-axis');
+	  
   	vis.updateVis();
   }
   
@@ -168,7 +196,23 @@ class Heatmap {
   
   // Update colour legend
   renderLegend() {
-  	// ...
+	const vis = this;
+  	vis.legendColorGradient.selectAll('stop')
+    	.data(vis.colorScale.range())
+  	.join('stop')
+    	.attr('offset', (d,i) => i/(vis.colorScale.range().length-1))
+    	.attr('stop-color', d => d);
+
+	  vis.xLegendScale.domain(vis.colorScale.domain()).nice();
+
+	  const extent = vis.xLegendScale.domain();
+	  
+	  vis.xLegendAxis.tickValues([
+			extent[0], 				// start
+			parseInt(extent[1]/3),	// one third
+			parseInt(extent[1]/3*2),// two thirds
+			extent[1]				// end
+	]);
   }
   
 }
