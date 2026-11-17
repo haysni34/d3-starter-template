@@ -97,3 +97,8 @@ h1 {
   transition: stroke 200ms ease-in-out;
   stroke: #333;
 }
+.author {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 15px;
+}
